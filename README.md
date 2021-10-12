@@ -19,7 +19,7 @@ cases you'll want to deserialize using one of:
    [`NSDictionary`](https://developer.apple.com/documentation/foundation/nsdictionary) containing the contents of the
    property list
 
-#### Example — Read Internal, Create Decodable
+### Example — Read Internal, Create Decodable
 Decode a launchd property list when running inside an executable into a custom `Decodable` struct:
 ```swift
 struct LaunchdPropertyList: Decodable {
@@ -33,11 +33,10 @@ struct LaunchdPropertyList: Decodable {
 }
 
 let data = try EmbeddedPropertyListReader.launchd.readInternal()
-let plist = try PropertyListDecoder().decode(LaunchdPropertyList.self,
-                                            from: data)
+let plist = try PropertyListDecoder().decode(LaunchdPropertyList.self, from: data)
 ```
 
-#### Example — Read External, Create NSDictionary
+### Example — Read External, Create NSDictionary
 Decode an info property list in an external executable into an `NSDictionary`:
 ```swift
 let executableURL = URL(fileUrlWithPath: <# path here #>)
@@ -46,7 +45,7 @@ let plist = try PropertyListSerialization.propertyList(from: data,
                                                        format: nil) as? NSDictionary
 ```
 
-#### Example — Create Decodable Using BundleVersion
+### Example — Create Decodable Using BundleVersion
 Decode an info property list, using `BundleVersion` to decode the 
  [`CFBundleVersion`](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleversion) 
 entry:
