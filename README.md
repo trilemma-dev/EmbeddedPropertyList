@@ -2,6 +2,7 @@ Using this framework you can read property lists embedded inside of a running ap
 executables stored on disk. Built in support is provided for reading both embedded Info and launchd property lists.
 Custom property list types can also be specified.
 
+# Usage
 Property lists are returned as [`Data`](https://developer.apple.com/documentation/foundation/data) instances. In most
 cases you'll want to deserialize using one of:
  * `ProperyListDecoder`'s
