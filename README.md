@@ -37,8 +37,7 @@ Decode an info property list in an external executable into an `NSDictionary`:
 ```swift
 let executableURL = URL(fileUrlWithPath: <# path here #>)
 let data = try EmbeddedPropertyListReader.info.readExternal(from: executableURL)
-let plist = try PropertyListSerialization.propertyList(from: data,
-                                                       format: nil) as? NSDictionary
+let plist = try PropertyListSerialization.propertyList(from: data, format: nil) as? NSDictionary
 ```
 
 ### Example — Create `Decodable` Using `BundleVersion`
