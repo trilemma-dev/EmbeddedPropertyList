@@ -41,7 +41,7 @@ let plist = try PropertyListSerialization.propertyList(from: data,
                                                        format: nil) as? NSDictionary
 ```
 
-### Example — Create Decodable Using `BundleVersion`
+### Example — Create `Decodable` Using `BundleVersion`
 Decode an info property list, using `BundleVersion` to decode the 
  [`CFBundleVersion`](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleversion) 
 entry:
