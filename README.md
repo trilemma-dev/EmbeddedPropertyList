@@ -1,8 +1,3 @@
-# EmbeddedPropertyList
-
-Read property lists embedded inside of Mach-O executables (also known as a Command Line Tools).
-
-## Overview
 Using this framework you can read property lists embedded inside of a running application as well as those of
 executables stored on disk. Built in support is provided for reading both embedded Info and launchd property lists.
 Custom property list types can also be specified.
