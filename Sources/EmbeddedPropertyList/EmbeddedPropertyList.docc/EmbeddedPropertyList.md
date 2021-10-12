@@ -1,4 +1,4 @@
-# EmbeddedPropertyList
+# ``EmbeddedPropertyList``
 
 Read property lists embedded inside of Mach-O executables (also known as a Command Line Tools).
 
@@ -47,7 +47,7 @@ let plist = try PropertyListSerialization.propertyList(from: data,
 ```
 
 #### Example — Create Decodable Using BundleVersion
-Decode an info property list, using `BundleVersion` to decode the 
+Decode an info property list, using ``BundleVersion`` to decode the 
  [`CFBundleVersion`](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleversion) 
 entry:
 
@@ -65,3 +65,27 @@ struct InfoPropertyList: Decodable {
 let data = try EmbeddedPropertyListReader.info.readInternal()
 let plist = try PropertyListDecoder().decode(InfoPropertyList.self, from: data)
 ```
+
+#### Comparing Property Lists
+In some circumstances you may want to directly compare two property lists. If you want to compare their true on disk
+representations, you can
+ [compare them as `Data` instances](https://developer.apple.com/documentation/foundation/data/2293245). However, because
+there are multiple encoding formats for property lists in many cases you should first decode them before performing a
+comparison.
+
+> Note: Only 64-bit Intel and ARM executables (or equivalent slices of universal binaries) are supported. Mac OS X 10.6 
+Snow Leopard was the last version to be 32-bit and macOS 10.14 Mojave was the last version to run 32-bit binaries.
+
+## Topics
+
+### Reader
+
+- ``EmbeddedPropertyListReader``
+
+### Property List Types
+
+- ``BundleVersion``
+
+### Errors
+
+- ``ReadError``
