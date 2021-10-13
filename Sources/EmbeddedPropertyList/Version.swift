@@ -1,5 +1,5 @@
 //
-//  BundleVersion.swift
+//  Version.swift
 //  EmbeddedPropertyList
 //
 //  Created by Josh Kaplan on 2021-10-13
