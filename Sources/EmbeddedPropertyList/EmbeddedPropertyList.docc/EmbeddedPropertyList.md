@@ -44,6 +44,7 @@ For an external executable, deserialize an info property list as an `NSDictionar
 let executableURL = URL(fileUrlWithPath: <# path here #>)
 let data = try EmbeddedPropertyListReader.info.readExternal(from: executableURL)
 let plist = try PropertyListSerialization.propertyList(from: data,
+                                                       options: .mutableContainersAndLeaves,
                                                        format: nil) as? NSDictionary
 ```
 
