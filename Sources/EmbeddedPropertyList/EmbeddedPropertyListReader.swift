@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// Read a property list embedded in a single file executable (also known as a Command Line Tool).
+/// Read a property list embedded in a Mach-O executable.
 public enum EmbeddedPropertyListReader {
     /// An embedded info property list.
     case info
@@ -36,8 +36,6 @@ public enum EmbeddedPropertyListReader {
     
     /// Read the property list embedded within this executable.
     ///
-    /// >  Warning: Due to unsafe memory usage, calling this function has the potential to result in bad memory access instead of throwing an error.
-    ///
     /// - Returns: The property list as data.
     public func readInternal() throws -> Data {
         // By passing in nil, this returns a handle for the dynamic shared object (shared library) for this executable
@@ -61,9 +59,10 @@ public enum EmbeddedPropertyListReader {
         }
     }
 
-    /// Read the property list embedded in the specified executable
+    /// Read the property list embedded in an on disk executable.
     ///
-    /// >  Warning: Due to unsafe memory usage, calling this function has the potential to result in bad memory access instead of throwing an error.
+    /// If this is a universal binary and multiple architecture slices can be read, then the property list for one of the architectures will be returned. Which
+    /// architecture's property list is returned is undefined. However, in practice a given property list is likely to be identical across architectures.
     ///
     /// - Parameters:
     ///   - from: Location of the executable to be read.
@@ -86,7 +85,7 @@ public enum EmbeddedPropertyListReader {
         if isMagicFat(magic: magic) {
             let mustSwap = mustSwapEndianness(magic: magic)
             let offsets = machHeaderOffsetsForFatExecutable(data: data, mustSwap: mustSwap)
-            if let offset = offsets.first?.value { // TODO: better way to decide which slice to choose
+            if let offset = offsets.first?.value {
                 machHeaderOffset = offset
             } else {
                 throw ReadError.unsupportedArchitecture
@@ -94,8 +93,6 @@ public enum EmbeddedPropertyListReader {
         } else {
             if !isMagic64(magic: magic) {
                 // This implementation only supports 64-bit architectures.
-                // Mac OS X 10.6 Snow Leopard was the last version to be 32-bit
-                // macOS 10.14 Mojave was the last version to run 32-bit binaries
                 throw ReadError.unsupportedArchitecture
             }
             
@@ -223,8 +220,6 @@ public enum EmbeddedPropertyListReader {
             }
             
             // This implementation only supports 64-bit architectures.
-            // Mac OS X 10.6 Snow Leopard was the last version to be 32-bit
-            // macOS 10.14 Mojave was the last version to run 32-bit executables
             if isMagic64(magic: readMagic(data: data, offset: arch.offset)) {
                 archOffsets[arch.cputype] = arch.offset
             }

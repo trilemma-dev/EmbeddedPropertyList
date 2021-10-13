@@ -1,30 +1,31 @@
 # ``EmbeddedPropertyList``
 
-Read property lists embedded inside of Mach-O executables (also known as a Command Line Tools).
+Read property lists embedded inside of Mach-O executables.
 
 ## Overview
-Using this framework you can read property lists embedded inside of a running application as well as those of
-executables stored on disk. Built in support is provided for reading both embedded Info and launchd property lists.
-Custom property list types can also be specified.
+Using this framework you can read property lists embedded inside of a running executable as well as those of
+executables stored on disk. These types of executables are often Command Line Tools. Built-in support is provided for
+reading both embedded info and launchd property lists. Custom property list types can also be specified.
 
-Property lists are returned as [`Data`](https://developer.apple.com/documentation/foundation/data) instances. In most
-cases you'll want to deserialize using one of:
+> Note: Only 64-bit Intel and ARM executables (or universal binary slices) are supported. Mac OS X 10.6 
+Snow Leopard was the last 32-bit OS. macOS 10.14 Mojave was the last to run 32-bit binaries.
+
+## Usage
+Property lists are returned as [`Data`](https://developer.apple.com/documentation/foundation/data) instances. Usually
+you'll want to deserialize using one of:
  * `ProperyListDecoder`'s
    [`decode(_:from:)`](https://developer.apple.com/documentation/foundation/propertylistdecoder/2895397-decode)
-   function to decode the `Data` into a [`Decodable`](https://developer.apple.com/documentation/swift/decodable)
-   you define
+   to deserialize the `Data` into a [`Decodable`](https://developer.apple.com/documentation/swift/decodable)
  * `PropertyListSerialization`'s 
    [`propertyList(from:options:format:)`](https://developer.apple.com/documentation/foundation/propertylistserialization/1409678-propertylist)
-   function to decode the `Data` into an 
-   [`NSDictionary`](https://developer.apple.com/documentation/foundation/nsdictionary) containing the contents of the
-   property list
+   to deserialize the `Data` into an [`NSDictionary`](https://developer.apple.com/documentation/foundation/nsdictionary)
 
 #### Example — Read Internal, Create Decodable
-Decode a launchd property list when running inside an executable into a custom `Decodable` struct:
+When running inside an executable, decode a launchd property list into a custom `Decodable` struct:
 ```swift
 struct LaunchdPropertyList: Decodable {
-    public let machServices: [String : Bool]
-    public let label: String
+    let machServices: [String : Bool]
+    let label: String
     
     private enum CodingKeys: CodingKey, String {
         case machServices = "MachServices"
@@ -33,12 +34,12 @@ struct LaunchdPropertyList: Decodable {
 }
 
 let data = try EmbeddedPropertyListReader.launchd.readInternal()
-let plist = try PropertyListDecoder().decode(LaunchdPropertyList.self,
-                                            from: data)
+let plist = try PropertyListDecoder().decode(LaunchdPropertyList.self, 
+                                             from: data)
 ```
 
 #### Example — Read External, Create NSDictionary
-Decode an info property list in an external executable into an `NSDictionary`:
+For an external executable, deserialize an info property list as an `NSDictionary`:
 ```swift
 let executableURL = URL(fileUrlWithPath: <# path here #>)
 let data = try EmbeddedPropertyListReader.info.readExternal(from: executableURL)
@@ -46,18 +47,18 @@ let plist = try PropertyListSerialization.propertyList(from: data,
                                                        format: nil) as? NSDictionary
 ```
 
-#### Example — Create Decodable Using BundleVersion
-Decode an info property list, using ``BundleVersion`` to decode the 
+#### Example — Create Decodable Using Version
+Decode an info property list, using ``Version`` to decode the 
  [`CFBundleVersion`](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleversion) 
 entry:
 
 ```swift
 struct InfoPropertyList: Decodable {
-    public let version: BundleVersion
-    public let bundleIdentifier: String
+    let bundleVersion: Version
+    let bundleIdentifier: String
     
     private enum CodingKeys: CodingKey, String {
-        case version = "CFBundleVersion"
+        case bundleVersion = "CFBundleVersion"
         case bundleIdentifier = "CFBundleIdentifier"
     }
 }
@@ -68,13 +69,10 @@ let plist = try PropertyListDecoder().decode(InfoPropertyList.self, from: data)
 
 #### Comparing Property Lists
 In some circumstances you may want to directly compare two property lists. If you want to compare their true on disk
-representations, you can
- [compare them as `Data` instances](https://developer.apple.com/documentation/foundation/data/2293245). However, because
-there are multiple encoding formats for property lists in many cases you should first decode them before performing a
-comparison.
-
-> Note: Only 64-bit Intel and ARM executables (or equivalent slices of universal binaries) are supported. Mac OS X 10.6 
-Snow Leopard was the last version to be 32-bit and macOS 10.14 Mojave was the last version to run 32-bit binaries.
+representations, you can 
+[compare them as `Data` instances](https://developer.apple.com/documentation/foundation/data/2293245). However, because
+there are multiple encoding formats for property lists in most cases you should first deserialize them before performing
+a comparison.
 
 ## Topics
 
@@ -84,7 +82,7 @@ Snow Leopard was the last version to be 32-bit and macOS 10.14 Mojave was the la
 
 ### Property List Types
 
-- ``BundleVersion``
+- ``Version``
 
 ### Errors
 

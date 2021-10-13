@@ -7,42 +7,46 @@
 
 import Foundation
 
-/// Represents a
-/// [`CFBundleVersion`](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleversion)
-/// value typically found in an Info.plist.
+/// Represent a version as is typically included in an info property list.
 ///
-/// Capable of representing any properly formatted version that matches one of:
+/// Capable of representing any version with a format that matches one of:
 ///   - `major`
 ///   - `major.minor`
 ///   - `major.minor.patch`
 ///
-/// Where `major`, `minor`, and `patch` must be `Int`s.
+/// `major`, `minor`, and `patch` must be `Int`s. Any values not provided will be represented as `0`. For example if this represents `6.4` then `patch`
+/// will be `0`. This matches
+/// [`CFBundleVersion`](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleversion)
+/// semantics.
 ///
-/// > Note: While this key is called `CFBundleVersion` it does not exclusively represent a **bundle's** version, it will typically also be present in the Info.plist
-/// embedded in a Mach-O executable.
-public struct BundleVersion: Comparable, Decodable, Hashable, RawRepresentable, CustomStringConvertible {
+/// > Note: `CFBundleVersion` does not exclusively represent a **bundle's** version. A Mach-O executable's info property list often contains this key.
+public struct Version: Comparable, Decodable, Hashable, RawRepresentable, CustomStringConvertible {
 
     public typealias RawValue = String
     
-    /// The raw string representation of the version.
+    /// The raw string representation of this version.
     public let rawValue: String
     
     /// The major version.
     public let major: Int
     
     /// The minor version.
+    ///
+    /// `0` if not specified.
     public let minor: Int
     
     /// The patch version.
+    ///
+    /// `0` if not specified.
     public let patch: Int
     
     /// Initializes from an encoded representation.
     ///
-    /// - Parameter decoder: <#decoder description#>
+    /// - Parameter decoder: 
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let rawValue = try container.decode(String.self)
-        if let bundleVersion = BundleVersion(rawValue: rawValue) {
+        if let bundleVersion = Version(rawValue: rawValue) {
             self = bundleVersion
         } else {
             let context = DecodingError.Context(codingPath: container.codingPath,
@@ -92,11 +96,13 @@ public struct BundleVersion: Comparable, Decodable, Hashable, RawRepresentable, 
         }
     }
     
+    /// A textual representation of this version.
     public var description: String {
-        return rawValue
+        return "\(self.major).\(self.minor).\(self.patch)"
     }
     
-    public static func < (lhs: BundleVersion, rhs: BundleVersion) -> Bool {
+    /// Semantically compares two `Version` instances.
+    public static func < (lhs: Version, rhs: Version) -> Bool {
         var lessThan = false
         if lhs.major < rhs.major {
             lessThan = true
@@ -112,5 +118,22 @@ public struct BundleVersion: Comparable, Decodable, Hashable, RawRepresentable, 
         }
         
         return lessThan
+    }
+    
+    /// Determines equality of two `Version` instances.
+    ///
+    ///
+    /// The ``rawValue-swift.property`` is not considered, meaning `6.4` and `6.4.0` are intentionally considered equal.
+    public static func == (lhs: Version, rhs: Version) -> Bool {
+        return (lhs.major == rhs.major) && (lhs.minor == rhs.minor) && (lhs.patch == rhs.patch)
+    }
+    
+    /// Hashes this version.
+    ///
+    /// Hashing does not take ``rawValue-swift.property`` into account, so `6.4` and `6.4.0` will intentionally hash to the same value.
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.major)
+        hasher.combine(self.minor)
+        hasher.combine(self.patch)
     }
 }

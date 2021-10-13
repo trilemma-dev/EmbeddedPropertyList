@@ -7,15 +7,15 @@
 
 import Foundation
 
-/// Errors that may occur while try to read embedded property lists.
+/// Errors that may occur while trying to read embedded property lists.
 public enum ReadError: Error {
-    /// The `__TEXT` section within the embedded property list that describes where the property list is stored was not found.
+    /// The `__TEXT` section describing where the property list is stored was not found in the Mach-O header.
     case sectionNotFound
-    /// The provided URL does not reference an executable with a Mach-O header.
+    /// The file is not an executable with a Mach-O header.
     case notMachOExecutable
-    /// None of the Mach-O header(s) ins the executable are supported.
+    /// None of the Mach-O header architectures in the executable are supported.
     ///
-    /// `x86_64` (Intel) and `arm64` (Apple Silicon) are supported.
+    /// `x86_64` (Intel) and `arm64` (Apple Silicon) architectures are supported.
     case unsupportedArchitecture
     /// The mach header execute symbol for the Mach-O executable could not be retrieved.
     ///
