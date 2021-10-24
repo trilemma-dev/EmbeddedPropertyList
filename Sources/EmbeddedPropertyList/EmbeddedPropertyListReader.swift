@@ -111,7 +111,7 @@ public enum EmbeddedPropertyListReader {
             if let sectionPointer = getsectbynamefromheader_64(headerPointer, "__TEXT", self.sectionName) {
                 // This section does not contain the property list itself, but instead describes where within this slice
                 // the property list exists
-                let plistDataRangeStart = Data.Index(sectionPointer.pointee.offset)
+                let plistDataRangeStart = Data.Index(offsetData.startIndex + Int(sectionPointer.pointee.offset))
                 let plistDataRangeEnd = Data.Index(plistDataRangeStart + Int(sectionPointer.pointee.size))
                 
                 return offsetData[plistDataRangeStart..<plistDataRangeEnd]
