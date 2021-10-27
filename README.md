@@ -2,6 +2,9 @@ Using this framework you can read property lists embedded inside of a running ex
 executables stored on disk. These types of executables are often Command Line Tools. Built-in support is provided for
 reading both embedded info and launchd property lists. Custom property list types can also be specified.
 
+To see a runnable sample app using this framework, check out
+[SwiftAuthorizationSample](https://github.com/trilemma-dev/SwiftAuthorizationSample).
+
 # Usage
 Property lists are returned as [`Data`](https://developer.apple.com/documentation/foundation/data) instances. Usually
 you'll want to deserialize using one of:
