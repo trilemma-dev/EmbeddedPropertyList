@@ -5,6 +5,8 @@ reading both embedded info and launchd property lists. Custom property list type
 To see a runnable sample app using this framework, check out
 [SwiftAuthorizationSample](https://github.com/trilemma-dev/SwiftAuthorizationSample).
 
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Ftrilemma-dev%2FEmbeddedPropertyList%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/trilemma-dev/EmbeddedPropertyList)
+
 # Usage
 Property lists are returned as [`Data`](https://developer.apple.com/documentation/foundation/data) instances. Usually
 you'll want to deserialize using one of:
