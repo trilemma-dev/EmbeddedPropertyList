@@ -27,7 +27,7 @@ struct LaunchdPropertyList: Decodable {
     let machServices: [String : Bool]
     let label: String
     
-    private enum CodingKeys: CodingKey, String {
+    private enum CodingKeys: String, CodingKey {
         case machServices = "MachServices"
         case label = "Label"
     }
@@ -58,7 +58,7 @@ struct InfoPropertyList: Decodable {
     let bundleVersion: Version
     let bundleIdentifier: String
     
-    private enum CodingKeys: CodingKey, String {
+    private enum CodingKeys: String, CodingKey {
         case bundleVersion = "CFBundleVersion"
         case bundleIdentifier = "CFBundleIdentifier"
     }

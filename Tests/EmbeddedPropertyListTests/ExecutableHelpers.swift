@@ -1,6 +1,6 @@
 //
 //  ExecutableHelpers.swift
-//  
+//  EmbeddedPropertyList
 //
 //  Created by Josh Kaplan on 2021-11-18
 //
@@ -15,12 +15,28 @@ enum TestExecutables {
 }
 
 struct InfoPropertyList: Decodable {
-    let CFBundleIdentifier: String // com.example.TestCLT
-    let CFBundleVersion: Version // 1.2.3
+    // Values encoded in the binary
+    static let bundleIdentifierValue = "com.example.TestCLT"
+    static let bundleVersionValue = "1.2.3"
+    
+    let bundleIdentifier: String
+    let bundleVersion: Version
+    
+    private enum CodingKeys: String, CodingKey {
+        case bundleVersion = "CFBundleVersion"
+        case bundleIdentifier = "CFBundleIdentifier"
+    }
 }
 
 struct LaunchdPropertyList: Decodable {
-    let Label: String // RepresentativeValue
+    // Values encoded in the binary
+    static let labelValue = "RepresentativeValue"
+    
+    let label: String
+    
+    private enum CodingKeys: String, CodingKey {
+        case label = "Label"
+    }
 }
 
 private let base64EncodedIntelx86_64 =
