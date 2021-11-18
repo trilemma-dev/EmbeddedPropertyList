@@ -20,7 +20,7 @@ import Foundation
 /// semantics.
 ///
 /// > Note: `CFBundleVersion` does not exclusively represent a **bundle's** version. A Mach-O executable's info property list often contains this key.
-public struct Version: Comparable, Decodable, Hashable, RawRepresentable, CustomStringConvertible {
+public struct Version: RawRepresentable {
 
     public typealias RawValue = String
     
@@ -40,24 +40,7 @@ public struct Version: Comparable, Decodable, Hashable, RawRepresentable, Custom
     /// `0` if not specified.
     public let patch: Int
     
-    /// Initializes from an encoded representation.
-    ///
-    /// - Parameter decoder: 
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        let rawValue = try container.decode(String.self)
-        if let bundleVersion = Version(rawValue: rawValue) {
-            self = bundleVersion
-        } else {
-            let context = DecodingError.Context(codingPath: container.codingPath,
-                                  debugDescription: "\(rawValue) is not a valid build number",
-                                  underlyingError: nil)
-            throw DecodingError.dataCorrupted(context)
-        }
-    }
-    
     /// Initializes from a raw `String` representation.
-    ///
     ///
     /// - Parameters:
     ///   - rawValue: To successfully initialize, the `rawValue` must match one of:
@@ -75,49 +58,40 @@ public struct Version: Comparable, Decodable, Hashable, RawRepresentable, Custom
             self.major = major
             self.minor = 0
             self.patch = 0
-        }
-        else if versionParts.count == 2,
+        } else if versionParts.count == 2,
             let major = Int(versionParts[0]),
             let minor = Int(versionParts[1]) {
             self.major = major
             self.minor = minor
             self.patch = 0
-        }
-        else if versionParts.count == 3,
+        } else if versionParts.count == 3,
             let major = Int(versionParts[0]),
             let minor = Int(versionParts[1]),
             let patch = Int(versionParts[2]) {
             self.major = major
             self.minor = minor
             self.patch = patch
-        }
-        else {
+        } else {
             return nil
         }
     }
-    
+}
+
+extension Version: CustomStringConvertible {
     /// A textual representation of this version.
     public var description: String {
         return "\(self.major).\(self.minor).\(self.patch)"
     }
-    
-    /// Semantically compares two `Version` instances.
-    public static func < (lhs: Version, rhs: Version) -> Bool {
-        var lessThan = false
-        if lhs.major < rhs.major {
-            lessThan = true
-        }
-        else if (lhs.major == rhs.major) &&
-                (lhs.minor < rhs.minor) {
-            lessThan = true
-        }
-        else if (lhs.major == rhs.major) &&
-                (lhs.minor == rhs.minor) &&
-                (lhs.patch < rhs.patch) {
-            lessThan = true
-        }
-        
-        return lessThan
+}
+
+extension Version: Hashable {
+    /// Hashes this version.
+    ///
+    /// Hashing does not take ``rawValue-swift.property`` into account, so for example `6.4` and `6.4.0` will intentionally hash to the same value.
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.major)
+        hasher.combine(self.minor)
+        hasher.combine(self.patch)
     }
     
     /// Determines equality of two `Version` instances.
@@ -127,13 +101,38 @@ public struct Version: Comparable, Decodable, Hashable, RawRepresentable, Custom
     public static func == (lhs: Version, rhs: Version) -> Bool {
         return (lhs.major == rhs.major) && (lhs.minor == rhs.minor) && (lhs.patch == rhs.patch)
     }
-    
-    /// Hashes this version.
+}
+
+extension Version: Comparable {
+    /// Semantically compares two `Version` instances.
+    public static func < (lhs: Version, rhs: Version) -> Bool {
+        var lessThan = false
+        if lhs.major < rhs.major {
+            lessThan = true
+        } else if lhs.major == rhs.major, lhs.minor < rhs.minor {
+            lessThan = true
+        } else if lhs.major == rhs.major, lhs.minor == rhs.minor, lhs.patch < rhs.patch {
+            lessThan = true
+        }
+        
+        return lessThan
+    }
+}
+
+extension Version: Decodable {
+    /// Initializes from an encoded representation.
     ///
-    /// Hashing does not take ``rawValue-swift.property`` into account, so `6.4` and `6.4.0` will intentionally hash to the same value.
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(self.major)
-        hasher.combine(self.minor)
-        hasher.combine(self.patch)
+    /// - Parameter decoder: Decoder containing an encoded representation of a version.
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let rawValue = try container.decode(String.self)
+        if let bundleVersion = Version(rawValue: rawValue) {
+            self = bundleVersion
+        } else {
+            let context = DecodingError.Context(codingPath: container.codingPath,
+                                                debugDescription: "\(rawValue) is not a valid build number",
+                                                underlyingError: nil)
+            throw DecodingError.dataCorrupted(context)
+        }
     }
 }

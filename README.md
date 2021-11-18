@@ -1,6 +1,6 @@
-Using this framework you can read property lists embedded inside of a running executable as well as those of
-executables stored on disk. These types of executables are often Command Line Tools. Built-in support is provided for
-reading both embedded info and launchd property lists. Custom property list types can also be specified.
+Using this framework you can read property lists embedded inside of a running executable as well as those of executables
+stored on disk. These types of executables are often Command Line Tools. Built-in support is provided for reading both
+embedded info and launchd property lists. Custom property list types can also be specified.
 
 To see a runnable sample app using this framework, check out
 [SwiftAuthorizationSample](https://github.com/trilemma-dev/SwiftAuthorizationSample).
