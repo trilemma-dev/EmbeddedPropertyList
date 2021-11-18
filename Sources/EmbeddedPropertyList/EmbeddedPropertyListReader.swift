@@ -33,6 +33,7 @@ public enum EmbeddedPropertyListReader {
     
     /// Read the property list embedded within this executable.
     ///
+    /// - Throws: If not running as a 64-bit executable then ``ReadError/unsupportedArchitecture`` will be thrown.
     /// - Returns: The property list as data.
     public func readInternal() throws -> Data {
         // By passing in nil, this returns a handle for the dynamic shared object (shared library) for this executable
@@ -56,11 +57,13 @@ public enum EmbeddedPropertyListReader {
 
     /// Read the property list embedded in an on disk executable.
     ///
-    /// If this is a universal binary and multiple architecture slices can be read, then the property list for one of the architectures will be returned. Which
-    /// architecture's property list is returned is undefined. However, in practice a given property list is likely to be identical across architectures.
+    /// If this is a universal binary and multiple architecture slices are supported by this framework, then the property list for one of the architectures will be returned.
+    /// Which architecture's property list is returned is undefined. However, in practice a given property list is likely to be identical across architectures.
     ///
     /// - Parameters:
     ///   - from: Location of the executable to be read.
+    /// - Throws: Only 64-bit executables (or 64-bit slices of universal binaries) are supported; if the executable only contains unsupported architectures then
+    /// ``ReadError/unsupportedArchitecture`` will be thrown.
     /// - Returns: The property list as data.
     public func readExternal(from executableURL: URL) throws -> Data {
         // Read the executable into a data instance
@@ -188,7 +191,7 @@ public enum EmbeddedPropertyListReader {
     ///   - data: Data representing the fat executable (universal binary). This function assumes, and performs no error checking, that the data passed in
     ///           represents a fat executable. If it does not, behavior is undefined and it's likely that a fatal bad memory access will occur.
     ///   - mustSwap: Whether the data representing the fat header must have it endianness swapped.
-    /// - Returns: A dictionary of cpu types to mach headers within the executable. Only 64-bit cpu types are included.
+    /// - Returns: A dictionary of CPU types to mach headers within the executable. Only 64-bit CPU types are included.
     private func machHeaderOffsetsForFatExecutable(data: Data, mustSwap: Bool) -> [cpu_type_t : UInt32] {
         // To populate with offsets
         var archOffsets = [cpu_type_t : UInt32]()
