@@ -66,9 +66,11 @@ public enum EmbeddedPropertyListReader {
     /// ``ReadError/unsupportedArchitecture`` will be thrown.
     /// - Returns: The property list as data.
     public func readExternal(from executableURL: URL) throws -> Data {
-        // Read the executable into a data instance
-        let data = try Data(contentsOf: executableURL)
-        
+        try readExternal(from: Data(contentsOf: executableURL))
+    }
+    
+    // Actually does the reading, split into a seperate function to improve testability
+    internal func readExternal(from data: Data) throws -> Data {
         // Determine if this is a Mach-O executable. If it's not, then trying to parse it is very likely to result in
         // bad memory access that will crash this process.
         let magic = readMagic(data, fromByteOffset: 0)
