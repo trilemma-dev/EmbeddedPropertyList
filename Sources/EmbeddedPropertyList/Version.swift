@@ -11,14 +11,14 @@ import Foundation
 /// [`CFBundleVersion`](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleversion)
 /// value as found in info property lists.
 ///
-/// Capable of representing any version with a format that matches one of:
+/// This struct is capable of representing any version with a format that matches one of:
 ///   - `major`
 ///   - `major.minor`
 ///   - `major.minor.patch`
 ///       - More values after `patch` may be provided, but will be ignored in comparison and equality checks.
 ///
-/// `major`, `minor`, and `patch` must be representable as `Int`s. Any values not provided will be represented as `0`. For example if this represents
-/// `1.2` then `patch` will be `0`. This matches `CFBundleVersion` semantics.
+/// `major`, `minor`, and `patch` and any additional values must be representable as `UInt`s. Any values not provided will be represented as `0`. For
+/// example if this represents `1.2` then `patch` will be `0`. This matches `CFBundleVersion` semantics.
 ///
 /// > Note: `CFBundleVersion` does not exclusively represent a **bundle's** version. A Mach-O executable's info property list often contains this key.
 public struct Version: RawRepresentable {
@@ -29,17 +29,17 @@ public struct Version: RawRepresentable {
     public let rawValue: String
     
     /// The major version.
-    public let major: Int
+    public let major: UInt
     
     /// The minor version.
     ///
     /// `0` if not specified.
-    public let minor: Int
+    public let minor: UInt
     
     /// The patch version.
     ///
     /// `0` if not specified.
-    public let patch: Int
+    public let patch: UInt
     
     /// Initializes from a raw `String` representation.
     ///
@@ -50,7 +50,7 @@ public struct Version: RawRepresentable {
     ///     - `major.minor.patch`
     ///         - More values after `patch` may be provided, but will be ignored in comparison and equality checks.
     ///
-    ///     Where `major`, `minor`, `patch` and any additional values are `Int`s.
+    ///     Where `major`, `minor`, `patch` and any additional values are representable as `UInt`s.
     public init?(rawValue: String) {
         self.rawValue = rawValue
         
@@ -68,11 +68,11 @@ public struct Version: RawRepresentable {
             return nil
         }
         
-        // All parts must be integers
-        var intParts = [Int]()
+        // All parts must be unsigned integers
+        var uintParts = [UInt]()
         for versionPart in versionParts {
-            if let part = Int(versionPart) {
-                intParts.append(part)
+            if let part = UInt(versionPart) {
+                uintParts.append(part)
             } else {
                 return nil
             }
@@ -80,18 +80,18 @@ public struct Version: RawRepresentable {
         
         // MARK: Initialization
         
-        if intParts.count == 1 {
-            self.major = intParts[0]
+        if uintParts.count == 1 {
+            self.major = uintParts[0]
             self.minor = 0
             self.patch = 0
-        } else if intParts.count == 2 {
-            self.major = intParts[0]
-            self.minor = intParts[1]
+        } else if uintParts.count == 2 {
+            self.major = uintParts[0]
+            self.minor = uintParts[1]
             self.patch = 0
         } else {
-            self.major = intParts[0]
-            self.minor = intParts[1]
-            self.patch = intParts[2]
+            self.major = uintParts[0]
+            self.minor = uintParts[1]
+            self.patch = uintParts[2]
         }
     }
 }
