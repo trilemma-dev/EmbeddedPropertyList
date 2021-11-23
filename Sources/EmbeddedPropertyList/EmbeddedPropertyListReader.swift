@@ -33,7 +33,6 @@ public enum EmbeddedPropertyListReader {
     
     /// Read the property list embedded within this executable.
     ///
-    /// - Throws: If not running as a 64-bit executable then ``ReadError/unsupportedArchitecture`` will be thrown.
     /// - Returns: The property list as data.
     public func readInternal() throws -> Data {
         // By passing in nil, this returns a handle for the dynamic shared object (shared library) for this executable
@@ -57,20 +56,21 @@ public enum EmbeddedPropertyListReader {
 
     /// Read the property list embedded in an on disk executable.
     ///
-    /// If this is a universal binary and multiple architecture slices are supported by this framework, then the property list for one of the architectures will be returned.
-    /// Which architecture's property list is returned is undefined. However, in practice a given property list is likely to be identical across architectures.
-    ///
     /// - Parameters:
     ///   - from: Location of the executable to be read.
+    ///   - forSlice: _Optional_ If this is a univeral binary with multiple architectures supported by this framework, then this slice's property list will be
+    ///               returned. Otherwise this parameter is ignored. By default the property list for the slice corresponding to the CPU type of the Mac running
+    ///               this code will be returned.
     /// - Throws: Only 64-bit executables (or 64-bit slices of universal binaries) are supported; if the executable only contains unsupported architectures then
     /// ``ReadError/unsupportedArchitecture`` will be thrown.
     /// - Returns: The property list as data.
-    public func readExternal(from executableURL: URL) throws -> Data {
-        try readExternal(from: Data(contentsOf: executableURL))
+    public func readExternal(from executableURL: URL,
+                             forSlice slice: UniversalBinarySliceType = .system) throws -> Data {
+        try readExternal(from: Data(contentsOf: executableURL), forSlice: slice)
     }
     
     // Actually does the reading, split into a seperate function to improve testability
-    internal func readExternal(from data: Data) throws -> Data {
+    internal func readExternal(from data: Data, forSlice slice: UniversalBinarySliceType) throws -> Data {
         // Determine if this is a Mach-O executable. If it's not, then trying to parse it is very likely to result in
         // bad memory access that will crash this process.
         let magic = readMagic(data, fromByteOffset: 0)
@@ -85,10 +85,15 @@ public enum EmbeddedPropertyListReader {
         if isMagicFat(magic) {
             let mustSwap = mustSwapEndianness(magic: magic)
             let offsets = machHeaderOffsetsForFatExecutable(data: data, mustSwap: mustSwap)
-            guard let offset = offsets.first?.value else {
+            if offsets.values.isEmpty {
                 throw ReadError.unsupportedArchitecture
+            } else if offsets.values.count == 1, let offset = offsets.values.first {
+                machHeaderOffset = offset
+            } else if let offset = offsets[try slice.asDarwinType()] {
+                machHeaderOffset = offset
+            } else {
+                throw ReadError.universalBinarySliceUnavailable
             }
-            machHeaderOffset = offset
         } else {
             if !isMagic64(magic) {
                 // This implementation only supports 64-bit architectures.
@@ -225,5 +230,52 @@ public enum EmbeddedPropertyListReader {
         }
         
         return archOffsets
+    }
+    
+    /// A universal binary slice's CPU type.
+    public enum UniversalBinarySliceType {
+        /// Slice type for an Intel 64-bit CPU.
+        case x86_64
+        /// Slice type for an ARM 64-bit CPU (also known as Apple Silicon).
+        case arm64
+        /// Slice type for the CPU type of the Mac executing this code.
+        case system
+        
+        /// Returns the corresponding Darwin `cpu_type_t` for this enum value.
+        fileprivate func asDarwinType() throws -> cpu_type_t {
+            switch self {
+                case .x86_64:
+                    return CPU_TYPE_X86_64
+                case .arm64:
+                    return CPU_TYPE_ARM64
+                case .system:
+                    return try cpuType()
+            }
+        }
+        
+        /// Determines the CPU type of this Mac.
+        ///
+        /// This relies on two `sysctl` calls. More information can be found via `man sysctl`. In particular `sysctl -a` will list all available commands on
+        /// the system which should include both `hw.cputype` and `hw.cpu64bit_capable`.
+        private func cpuType() throws -> cpu_type_t {
+            // Retrieve CPU type
+            var cpuType = cpu_type_t()
+            var size = MemoryLayout<cpu_type_t>.size
+            guard sysctlbyname("hw.cputype", &cpuType, &size, nil, 0) == 0 else {
+                throw ReadError.architectureNotDetermined
+            }
+            
+            // Determine if this is a 64-bit CPU
+            var capable64bit = Int32()
+            size = MemoryLayout<Int32>.size
+            guard sysctlbyname("hw.cpu64bit_capable", &capable64bit, &size, nil, 0) == 0 else {
+                throw ReadError.architectureNotDetermined
+            }
+            
+            // If this 64-bit then adjust accordingly to match the definitions for CPU_TYPE_X86_64 and CPU_TYPE_ARM64
+            cpuType = (capable64bit == 1) ? (cpuType | CPU_ARCH_ABI64) : cpuType
+            
+            return cpuType
+        }
     }
 }

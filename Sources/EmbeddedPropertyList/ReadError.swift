@@ -17,8 +17,14 @@ public enum ReadError: Error {
     ///
     /// `x86_64` (Intel) and `arm64` (Apple Silicon) architectures are supported.
     case unsupportedArchitecture
+    /// The requested universal binary slice type was not present in the Mach-O executable.
+    case universalBinarySliceUnavailable
     /// The mach header execute symbol for the Mach-O executable could not be retrieved.
     ///
     /// This is an internal error.
     case machHeaderExecuteSymbolUnretrievable
+    /// The architecture of this Mac could not be determiend.
+    ///
+    /// This is an internal error.
+    case architectureNotDetermined
 }

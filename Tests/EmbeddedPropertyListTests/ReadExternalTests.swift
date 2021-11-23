@@ -10,28 +10,66 @@ import XCTest
 
 final class ReadExternalTests: XCTestCase {
     
-    func testInfoReadIntelx86_64() throws {
-        let plistData = try EmbeddedPropertyListReader.info.readExternal(from: TestExecutables.intelx86_64)
+    // MARK: Info
+    
+    func testInfoReadIntelx86_64__for_x86_64Slice_IgnoredParameter() throws {
+        let plistData = try EmbeddedPropertyListReader.info.readExternal(from: TestExecutables.intelx86_64,
+                                                                         forSlice: .x86_64)
         let plist = try PropertyListDecoder().decode(InfoPropertyList.self, from: plistData)
         XCTAssertEqual(plist.bundleIdentifier, InfoPropertyList.bundleIdentifierValue)
         XCTAssertEqual(plist.bundleVersion.rawValue, InfoPropertyList.bundleVersionValue)
     }
     
-    func testInfoReadUniversalBinary() throws {
-        let plistData = try EmbeddedPropertyListReader.info.readExternal(from: TestExecutables.universalBinary)
+    func testInfoReadIntelx86_64__for_arm64Slice_IgnoredParameter() throws {
+        let plistData = try EmbeddedPropertyListReader.info.readExternal(from: TestExecutables.intelx86_64,
+                                                                         forSlice: .arm64)
         let plist = try PropertyListDecoder().decode(InfoPropertyList.self, from: plistData)
         XCTAssertEqual(plist.bundleIdentifier, InfoPropertyList.bundleIdentifierValue)
         XCTAssertEqual(plist.bundleVersion.rawValue, InfoPropertyList.bundleVersionValue)
     }
     
-    func testLaunchdReadIntelx86_64() throws {
-        let plistData = try EmbeddedPropertyListReader.launchd.readExternal(from: TestExecutables.intelx86_64)
+    func testInfoReadUniversalBinary__for_x86_64Slice() throws {
+        let plistData = try EmbeddedPropertyListReader.info.readExternal(from: TestExecutables.universalBinary,
+                                                                         forSlice: .x86_64)
+        let plist = try PropertyListDecoder().decode(InfoPropertyList.self, from: plistData)
+        XCTAssertEqual(plist.bundleIdentifier, InfoPropertyList.bundleIdentifierValue)
+        XCTAssertEqual(plist.bundleVersion.rawValue, InfoPropertyList.bundleVersionValue)
+    }
+    
+    func testInfoReadUniversalBinary__for_arm64Slice() throws {
+        let plistData = try EmbeddedPropertyListReader.info.readExternal(from: TestExecutables.universalBinary,
+                                                                         forSlice: .arm64)
+        let plist = try PropertyListDecoder().decode(InfoPropertyList.self, from: plistData)
+        XCTAssertEqual(plist.bundleIdentifier, InfoPropertyList.bundleIdentifierValue)
+        XCTAssertEqual(plist.bundleVersion.rawValue, InfoPropertyList.bundleVersionValue)
+    }
+    
+    // MARK: launchd
+    
+    func testLaunchdReadIntelx86_64__for_x86_64Slice_IgnoredParameter() throws {
+        let plistData = try EmbeddedPropertyListReader.launchd.readExternal(from: TestExecutables.intelx86_64,
+                                                                            forSlice: .x86_64)
         let plist = try PropertyListDecoder().decode(LaunchdPropertyList.self, from: plistData)
         XCTAssertEqual(plist.label, LaunchdPropertyList.labelValue)
     }
     
-    func testLaunchdReadUniversalBinary() throws {
-        let plistData = try EmbeddedPropertyListReader.launchd.readExternal(from: TestExecutables.universalBinary)
+    func testLaunchdReadIntelx86_64__for_arm64Slice_IgnoredParameter() throws {
+        let plistData = try EmbeddedPropertyListReader.launchd.readExternal(from: TestExecutables.intelx86_64,
+                                                                            forSlice: .arm64)
+        let plist = try PropertyListDecoder().decode(LaunchdPropertyList.self, from: plistData)
+        XCTAssertEqual(plist.label, LaunchdPropertyList.labelValue)
+    }
+    
+    func testLaunchdReadUniversalBinary__for_x86_64Slice() throws {
+        let plistData = try EmbeddedPropertyListReader.launchd.readExternal(from: TestExecutables.universalBinary,
+                                                                            forSlice: .x86_64)
+        let plist = try PropertyListDecoder().decode(LaunchdPropertyList.self, from: plistData)
+        XCTAssertEqual(plist.label, LaunchdPropertyList.labelValue)
+    }
+    
+    func testLaunchdReadUniversalBinary__for_arm64Slice() throws {
+        let plistData = try EmbeddedPropertyListReader.launchd.readExternal(from: TestExecutables.universalBinary,
+                                                                            forSlice: .arm64)
         let plist = try PropertyListDecoder().decode(LaunchdPropertyList.self, from: plistData)
         XCTAssertEqual(plist.label, LaunchdPropertyList.labelValue)
     }
