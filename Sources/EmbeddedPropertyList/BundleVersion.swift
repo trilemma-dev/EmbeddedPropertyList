@@ -1,5 +1,5 @@
 //
-//  Version.swift
+//  BundleVersion.swift
 //  EmbeddedPropertyList
 //
 //  Created by Josh Kaplan on 2021-10-13
@@ -21,7 +21,7 @@ import Foundation
 /// example if this represents `1.2` then `patch` will be `0`. This matches `CFBundleVersion` semantics.
 ///
 /// > Note: `CFBundleVersion` does not exclusively represent a **bundle's** version. A Mach-O executable's info property list often contains this key.
-public struct Version: RawRepresentable {
+public struct BundleVersion: RawRepresentable {
 
     public typealias RawValue = String
     
@@ -96,14 +96,14 @@ public struct Version: RawRepresentable {
     }
 }
 
-extension Version: CustomStringConvertible {
+extension BundleVersion: CustomStringConvertible {
     /// A textual representation of this version.
     public var description: String {
         return "\(self.major).\(self.minor).\(self.patch) (\(self.rawValue))"
     }
 }
 
-extension Version: Hashable {
+extension BundleVersion: Hashable {
     /// Hashes this version.
     ///
     /// Hashing does not take ``rawValue-swift.property`` into account, this means the following will hash identically:
@@ -122,16 +122,16 @@ extension Version: Hashable {
     ///  - `1.` and `1.0.0`
     ///  - `1.2` and `1.2.0`
     ///  - `1.2.3` and `1.2.3.a`
-    public static func == (lhs: Version, rhs: Version) -> Bool {
+    public static func == (lhs: BundleVersion, rhs: BundleVersion) -> Bool {
         return (lhs.major == rhs.major) && (lhs.minor == rhs.minor) && (lhs.patch == rhs.patch)
     }
 }
 
-extension Version: Comparable {
+extension BundleVersion: Comparable {
     /// Semantically compares two `Version` instances.
     ///
     /// When comparing versions, any values beyond ``patch`` will not be taken into account.
-    public static func < (lhs: Version, rhs: Version) -> Bool {
+    public static func < (lhs: BundleVersion, rhs: BundleVersion) -> Bool {
         var lessThan = false
         if lhs.major < rhs.major {
             lessThan = true
@@ -145,14 +145,14 @@ extension Version: Comparable {
     }
 }
 
-extension Version: Decodable {
+extension BundleVersion: Decodable {
     /// Initializes from an encoded representation.
     ///
     /// - Parameter decoder: Decoder containing an encoded representation of a version.
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let rawValue = try container.decode(String.self)
-        if let bundleVersion = Version(rawValue: rawValue) {
+        if let bundleVersion = BundleVersion(rawValue: rawValue) {
             self = bundleVersion
         } else {
             let context = DecodingError.Context(codingPath: container.codingPath,

@@ -48,14 +48,14 @@ let plist = try PropertyListSerialization.propertyList(from: data,
                                                        format: nil) as? NSDictionary
 ```
 
-#### Example — Create Decodable Using Version
-Decode an info property list, using ``Version`` to decode the 
+#### Example — Create Decodable Using BundleVersion
+Decode an info property list, using ``BundleVersion`` to decode the 
  [`CFBundleVersion`](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleversion) 
 entry:
 
 ```swift
 struct InfoPropertyList: Decodable {
-    let bundleVersion: Version
+    let bundleVersion: BundleVersion
     let bundleIdentifier: String
     
     private enum CodingKeys: String, CodingKey {
@@ -78,13 +78,8 @@ a comparison.
 ## Topics
 
 ### Reader
-
 - ``EmbeddedPropertyListReader``
-
 ### Property List Types
-
-- ``Version``
-
+- ``BundleVersion``
 ### Errors
-
 - ``ReadError``

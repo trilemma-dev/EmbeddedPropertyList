@@ -20,7 +20,7 @@ struct InfoPropertyList: Decodable {
     static let bundleVersionValue = "1.2.3"
     
     let bundleIdentifier: String
-    let bundleVersion: Version
+    let bundleVersion: BundleVersion
     
     private enum CodingKeys: String, CodingKey {
         case bundleVersion = "CFBundleVersion"

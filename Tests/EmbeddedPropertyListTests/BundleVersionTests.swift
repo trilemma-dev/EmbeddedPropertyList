@@ -1,5 +1,5 @@
 //
-//  VersionTests.swift
+//  BundleVersionTests.swift
 //  EmbeddedPropertyList
 //
 //  Created by Josh Kaplan on 2021-11-18
@@ -8,46 +8,46 @@
 import XCTest
 @testable import EmbeddedPropertyList
 
-final class VersionTests: XCTestCase {
+final class BundleVersionTests: XCTestCase {
     func testMajorVersion() {
-        XCTAssertNotNil(Version(rawValue: "1"))
-        XCTAssertNil(Version(rawValue: "A"))
-        XCTAssertNil(Version(rawValue: ""))
-        XCTAssertNil(Version(rawValue: "."))
-        XCTAssertNil(Version(rawValue: ".1"))
-        XCTAssertNil(Version(rawValue: " .1"))
+        XCTAssertNotNil(BundleVersion(rawValue: "1"))
+        XCTAssertNil(BundleVersion(rawValue: "A"))
+        XCTAssertNil(BundleVersion(rawValue: ""))
+        XCTAssertNil(BundleVersion(rawValue: "."))
+        XCTAssertNil(BundleVersion(rawValue: ".1"))
+        XCTAssertNil(BundleVersion(rawValue: " .1"))
     }
     
     func testMinorVersion() {
-        XCTAssertNotNil(Version(rawValue: "1.2"))
-        XCTAssertNil(Version(rawValue: "1.B"))
-        XCTAssertNil(Version(rawValue: "A.B"))
+        XCTAssertNotNil(BundleVersion(rawValue: "1.2"))
+        XCTAssertNil(BundleVersion(rawValue: "1.B"))
+        XCTAssertNil(BundleVersion(rawValue: "A.B"))
     }
     
     func testPatchVersion() {
-        XCTAssertNotNil(Version(rawValue: "1.2.3"))
-        XCTAssertNil(Version(rawValue: "1.2.C"))
-        XCTAssertNil(Version(rawValue: "1.B.C"))
-        XCTAssertNil(Version(rawValue: "A.B.C"))
+        XCTAssertNotNil(BundleVersion(rawValue: "1.2.3"))
+        XCTAssertNil(BundleVersion(rawValue: "1.2.C"))
+        XCTAssertNil(BundleVersion(rawValue: "1.B.C"))
+        XCTAssertNil(BundleVersion(rawValue: "A.B.C"))
     }
     
     func testPostPatchVersion() {
-        XCTAssertNotNil(Version(rawValue: "1.2.3.4"))
-        XCTAssertNil(Version(rawValue: "1.2.3.D"))
-        XCTAssertNil(Version(rawValue: "1.2.C.D"))
-        XCTAssertNil(Version(rawValue: "1.B.C.D"))
-        XCTAssertNil(Version(rawValue: "A.B.C.D"))
+        XCTAssertNotNil(BundleVersion(rawValue: "1.2.3.4"))
+        XCTAssertNil(BundleVersion(rawValue: "1.2.3.D"))
+        XCTAssertNil(BundleVersion(rawValue: "1.2.C.D"))
+        XCTAssertNil(BundleVersion(rawValue: "1.B.C.D"))
+        XCTAssertNil(BundleVersion(rawValue: "A.B.C.D"))
         
-        XCTAssertNotNil(Version(rawValue: "1.2.3.4.5"))
-        XCTAssertNil(Version(rawValue: "1.2.3.4.E"))
-        XCTAssertNil(Version(rawValue: "1.2.3.D.E"))
-        XCTAssertNil(Version(rawValue: "1.2.C.D.E"))
-        XCTAssertNil(Version(rawValue: "1.B.C.D.E"))
-        XCTAssertNil(Version(rawValue: "A.B.C.D.E"))
+        XCTAssertNotNil(BundleVersion(rawValue: "1.2.3.4.5"))
+        XCTAssertNil(BundleVersion(rawValue: "1.2.3.4.E"))
+        XCTAssertNil(BundleVersion(rawValue: "1.2.3.D.E"))
+        XCTAssertNil(BundleVersion(rawValue: "1.2.C.D.E"))
+        XCTAssertNil(BundleVersion(rawValue: "1.B.C.D.E"))
+        XCTAssertNil(BundleVersion(rawValue: "A.B.C.D.E"))
     }
     
     struct Container: Decodable {
-        let version: Version
+        let version: BundleVersion
         let other: Int
     }
     
