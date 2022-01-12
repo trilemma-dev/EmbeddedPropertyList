@@ -109,7 +109,7 @@ extension BundleVersion: Hashable {
     /// Hashing does not take ``rawValue-swift.property`` into account, this means the following will hash identically:
     ///  - `1.` and `1.0.0`
     ///  - `1.2` and `1.2.0`
-    ///  - `1.2.3` and `1.2.3.a`
+    ///  - `1.2.3` and `1.2.3.4`
     public func hash(into hasher: inout Hasher) {
         hasher.combine(self.major)
         hasher.combine(self.minor)
@@ -121,7 +121,7 @@ extension BundleVersion: Hashable {
     /// The ``rawValue-swift.property`` is not considered, this means the following will evaluate as equal:
     ///  - `1.` and `1.0.0`
     ///  - `1.2` and `1.2.0`
-    ///  - `1.2.3` and `1.2.3.a`
+    ///  - `1.2.3` and `1.2.3.4`
     public static func == (lhs: BundleVersion, rhs: BundleVersion) -> Bool {
         return (lhs.major == rhs.major) && (lhs.minor == rhs.minor) && (lhs.patch == rhs.patch)
     }
