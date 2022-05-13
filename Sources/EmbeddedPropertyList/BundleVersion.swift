@@ -48,7 +48,7 @@ public struct BundleVersion: RawRepresentable {
     ///     - `major`
     ///     - `major.minor`
     ///     - `major.minor.patch`
-    ///         - More values after `patch` may be provided, but will be ignored in comparison and equality checks.
+    ///         - More period-separated values after `patch` may be provided, but will be ignored in comparison and equality checks.
     ///
     ///     Where `major`, `minor`, `patch` and any additional values are representable as `UInt`s.
     public init?(rawValue: String) {
@@ -56,8 +56,13 @@ public struct BundleVersion: RawRepresentable {
         
         // MARK: Validation
         
-        // Must start with an integer, not a seperator
+        // Must start with an unsigned integer, not a separator
         if rawValue.starts(with: ".") {
+            return nil
+        }
+        
+        // Must not end with a separator
+        if rawValue.hasSuffix(".") {
             return nil
         }
         
@@ -107,7 +112,7 @@ extension BundleVersion: Hashable {
     /// Hashes this version.
     ///
     /// Hashing does not take ``rawValue-swift.property`` into account, this means the following will hash identically:
-    ///  - `1.` and `1.0.0`
+    ///  - `1` and `1.0.0`
     ///  - `1.2` and `1.2.0`
     ///  - `1.2.3` and `1.2.3.4`
     public func hash(into hasher: inout Hasher) {
@@ -119,7 +124,7 @@ extension BundleVersion: Hashable {
     /// Determines equality of two `Version` instances.
     ///
     /// The ``rawValue-swift.property`` is not considered, this means the following will evaluate as equal:
-    ///  - `1.` and `1.0.0`
+    ///  - `1` and `1.0.0`
     ///  - `1.2` and `1.2.0`
     ///  - `1.2.3` and `1.2.3.4`
     public static func == (lhs: BundleVersion, rhs: BundleVersion) -> Bool {
