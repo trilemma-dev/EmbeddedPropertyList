@@ -11,6 +11,7 @@ import XCTest
 final class BundleVersionTests: XCTestCase {
     func testMajorVersion() {
         XCTAssertNotNil(BundleVersion(rawValue: "1"))
+        XCTAssertNil(BundleVersion(rawValue: "1."))
         XCTAssertNil(BundleVersion(rawValue: "A"))
         XCTAssertNil(BundleVersion(rawValue: ""))
         XCTAssertNil(BundleVersion(rawValue: "."))
@@ -20,12 +21,14 @@ final class BundleVersionTests: XCTestCase {
     
     func testMinorVersion() {
         XCTAssertNotNil(BundleVersion(rawValue: "1.2"))
+        XCTAssertNil(BundleVersion(rawValue: "1.2."))
         XCTAssertNil(BundleVersion(rawValue: "1.B"))
         XCTAssertNil(BundleVersion(rawValue: "A.B"))
     }
     
     func testPatchVersion() {
         XCTAssertNotNil(BundleVersion(rawValue: "1.2.3"))
+        XCTAssertNil(BundleVersion(rawValue: "1.2.3."))
         XCTAssertNil(BundleVersion(rawValue: "1.2.C"))
         XCTAssertNil(BundleVersion(rawValue: "1.B.C"))
         XCTAssertNil(BundleVersion(rawValue: "A.B.C"))
@@ -33,12 +36,14 @@ final class BundleVersionTests: XCTestCase {
     
     func testPostPatchVersion() {
         XCTAssertNotNil(BundleVersion(rawValue: "1.2.3.4"))
+        XCTAssertNil(BundleVersion(rawValue: "1.2.3.4."))
         XCTAssertNil(BundleVersion(rawValue: "1.2.3.D"))
         XCTAssertNil(BundleVersion(rawValue: "1.2.C.D"))
         XCTAssertNil(BundleVersion(rawValue: "1.B.C.D"))
         XCTAssertNil(BundleVersion(rawValue: "A.B.C.D"))
         
         XCTAssertNotNil(BundleVersion(rawValue: "1.2.3.4.5"))
+        XCTAssertNil(BundleVersion(rawValue: "1.2.3.4.5."))
         XCTAssertNil(BundleVersion(rawValue: "1.2.3.4.E"))
         XCTAssertNil(BundleVersion(rawValue: "1.2.3.D.E"))
         XCTAssertNil(BundleVersion(rawValue: "1.2.C.D.E"))
